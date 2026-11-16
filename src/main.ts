@@ -1,0 +1,114 @@
+import './style.css';
+import { Sfx } from './audio';
+import { draw, follow, type View } from './render';
+import { loadBest, loadSound, saveBest, saveSound } from './save';
+import { drop, newGame, update, type State } from './sim';
+
+const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+const canvas = $<HTMLCanvasElement>('stage');
+const hud = $('hud');
+const startEl = $('start');
+const overEl = $('over');
+const hudScore = $('hud-score');
+const sfx = new Sfx();
+sfx.enabled = loadSound();
+
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('reduce');
+
+let state: State = newGame();
+let view: View = { cam: 0 };
+let running = false;
+let best = loadBest();
+let last = performance.now();
+
+function fit(): void {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.round(canvas.clientWidth * dpr);
+  canvas.height = Math.round(canvas.clientHeight * dpr);
+}
+addEventListener('resize', fit);
+fit();
+
+function showBest(): void {
+  $('start-best').textContent = String(best);
+  $('hud-best').textContent = String(best);
+}
+showBest();
+
+function paintSound(): void {
+  const b = $('sound');
+  b.textContent = sfx.enabled ? '🔊' : '🔇';
+  b.setAttribute('aria-pressed', String(sfx.enabled));
+  b.setAttribute('aria-label', sfx.enabled ? 'Couper le son' : 'Activer le son');
+}
+paintSound();
+$('sound').addEventListener('click', (e) => {
+  e.stopPropagation();
+  sfx.enabled = !sfx.enabled;
+  saveSound(sfx.enabled);
+  if (sfx.enabled) sfx.unlock();
+  paintSound();
+});
+
+function start(): void {
+  sfx.unlock();
+  state = newGame();
+  view = { cam: 0 };
+  running = true;
+  startEl.hidden = true;
+  overEl.hidden = true;
+  hud.hidden = false;
+  hudScore.textContent = '0';
+}
+
+function tap(): void {
+  if (!running || state.over) return;
+  sfx.unlock();
+  const r = drop(state);
+  hudScore.textContent = String(state.score);
+  hudScore.classList.remove('bump');
+  void hudScore.offsetWidth;
+  hudScore.classList.add('bump');
+  if (r === 'perfect') sfx.perfect(state.combo);
+  else if (r === 'cut') sfx.land();
+  else if (r === 'miss') {
+    sfx.over();
+    best = saveBest(state.score);
+    showBest();
+    setTimeout(() => {
+      $('over-score').textContent = String(state.score);
+      $('over-best').textContent = state.score >= best && state.score > 0 ? 'Nouveau record !' : `Meilleur : ${best}`;
+      overEl.hidden = false;
+      $('replay').focus();
+    }, 700);
+  }
+}
+
+canvas.addEventListener('pointerdown', (e) => {
+  e.preventDefault();
+  tap();
+});
+addEventListener('keydown', (e) => {
+  if (e.code !== 'Space' && e.code !== 'Enter') return;
+  const t = e.target as HTMLElement;
+  if (t.tagName === 'BUTTON') return;
+  e.preventDefault();
+  tap();
+});
+$('play').addEventListener('click', start);
+$('replay').addEventListener('click', start);
+
+function frame(now: number): void {
+  const dt = Math.min(0.05, (now - last) / 1000);
+  last = now;
+  if (running) {
+    update(state, dt);
+    follow(view, state, dt);
+  } else {
+    // décor de l'accueil : une petite tour immobile
+    view.cam = 0;
+  }
+  draw(canvas, state, view, now / 1000, running);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);

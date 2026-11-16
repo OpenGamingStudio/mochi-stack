@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mochi Stack</title>
+<meta name="description" content="Mochi Stack, un jeu web open source d'OpenGamingStudio : lâche les mochis pile sur la tour et empile-les le plus haut possible.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="theme-color" content="#FFB3C7">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<script type="module" src="/src/main.ts"></script>
+</head>
+<body class="font-sans">
+<div id="app" class="fixed inset-0 overflow-hidden">
+  <canvas id="stage" class="absolute inset-0 h-full w-full touch-none" aria-label="Plateau de jeu : touche pour lâcher le mochi" role="img"></canvas>
+
+  <div id="hud" hidden class="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between p-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+    <div class="chip" aria-label="Meilleur score">★ <span id="hud-best">0</span></div>
+    <div id="hud-score" class="score text-7xl leading-none" aria-label="Score">0</div>
+    <div class="w-12"></div>
+  </div>
+
+  <button id="sound" type="button" class="btn btn-cream btn-icon absolute right-3 top-[max(0.75rem,env(safe-area-inset-top))]" aria-label="Son" aria-pressed="true">🔊</button>
+
+  <section id="start" class="absolute inset-0 flex flex-col items-center justify-center gap-6 p-4 text-center">
+    <h1 class="logo text-6xl">Mochi<br>Stack</h1>
+    <p class="max-w-xs text-xl font-bold">Lâche chaque mochi pile sur la tour. Ce qui dépasse tombe !</p>
+    <button id="play" type="button" class="btn btn-big">Jouer</button>
+    <p class="chip">Meilleur : <span id="start-best">0</span></p>
+  </section>
+
+  <section id="over" hidden class="pop absolute inset-0 flex items-start justify-center p-4 pt-20" role="dialog" aria-labelledby="over-title">
+    <div class="panel flex w-full max-w-xs flex-col items-center gap-4 p-6 text-center">
+      <h2 id="over-title" class="text-3xl font-bold">La tour est tombée !</h2>
+      <p class="text-xl font-bold">Hauteur <span id="over-score" class="text-5xl">0</span></p>
+      <p id="over-best" class="chip"></p>
+      <button id="replay" type="button" class="btn btn-big">Rejouer</button>
+    </div>
+  </section>
+</div>
+</body>
+</html>
