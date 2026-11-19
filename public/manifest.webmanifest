@@ -1,14 +1,14 @@
 {
   "name": "Mochi Stack",
   "short_name": "Mochi Stack",
-  "description": "Empile des mochis pastel le plus haut possible. Un tap, un mochi !",
+  "description": "Empile des chocolats le plus haut possible. Un tap, un mochi !",
   "lang": "fr",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#FFB3C7",
-  "background_color": "#FFF4E0",
+  "theme_color": "#7B4021",
+  "background_color": "#F6E2C4",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }

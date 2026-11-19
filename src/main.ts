@@ -19,6 +19,8 @@ let state: State = newGame();
 let view: View = { cam: 0 };
 let running = false;
 let best = loadBest();
+let bestAtStart = best;
+let recordSung = false;
 let last = performance.now();
 
 function fit(): void {
@@ -42,6 +44,7 @@ function paintSound(): void {
   b.setAttribute('aria-label', sfx.enabled ? 'Couper le son' : 'Activer le son');
 }
 paintSound();
+$('version').textContent = 'v' + __APP_VERSION__;
 $('sound').addEventListener('click', (e) => {
   e.stopPropagation();
   sfx.enabled = !sfx.enabled;
@@ -53,6 +56,8 @@ $('sound').addEventListener('click', (e) => {
 function start(): void {
   sfx.unlock();
   state = newGame();
+  bestAtStart = best;
+  recordSung = false;
   view = { cam: 0 };
   running = true;
   startEl.hidden = true;
@@ -69,7 +74,11 @@ function tap(): void {
   hudScore.classList.remove('bump');
   void hudScore.offsetWidth;
   hudScore.classList.add('bump');
-  if (r === 'perfect') sfx.perfect(state.combo);
+  const beatRecord = r !== 'miss' && !recordSung && bestAtStart > 0 && state.score > bestAtStart;
+  if (beatRecord) {
+    recordSung = true;
+    sfx.record();
+  } else if (r === 'perfect') sfx.perfect(state.combo);
   else if (r === 'cut') sfx.land();
   else if (r === 'miss') {
     sfx.over();

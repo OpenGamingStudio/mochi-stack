@@ -13,7 +13,7 @@ npm test           # tests (vitest)
 npm run build      # tsc + build statique dans dist/
 ```
 
-Vite + TypeScript + Tailwind, canvas 2D, sons synthétisés (Web Audio, coupables), police Fredoka auto-hébergée (OFL). Déploiement : Dockerfile nginx à la racine.
+Thème chocolat (v1.1.0). Vite + TypeScript + Tailwind, canvas 2D, sons ASMR de clavier mécanique synthétisés (Web Audio, volume bas, muet mémorisé, aucun fichier ni crédit externe), police Fredoka auto-hébergée (OFL). Déploiement : Dockerfile nginx à la racine.
 
 ## Licence
 
