@@ -1,8 +1,16 @@
 import { BLOCK_H, FIELD, PALETTE, type Block, type State } from './sim';
 
-const COLORS = ['#ffb3c7', '#b8e6c9', '#ffe29a', '#b9d8ff', '#d9c2ff', '#ffc9a8'];
-const BGS = ['#fff4e0', '#e8f6ff', '#f1ebff', '#e9f8ee', '#ffeef2'];
-const INK = '#16110f';
+// Chocolats : [fond, relief]. Aplats uniquement, aucun dégradé.
+const COLORS: [string, string][] = [
+  ['#7b4021', '#9a5a33'], // noir
+  ['#c98a52', '#dba670'], // au lait
+  ['#fff0d2', '#ffffff'], // blanc
+  ['#e0a055', '#f0bd7c'], // caramel
+  ['#5a2d17', '#7b4a2e'], // cacao
+  ['#e58fa3', '#f4b0c0'], // rubis
+];
+const BGS = ['#f6e2c4', '#efd3ad', '#e4bf91', '#d9ae80', '#f9ead2'];
+const INK = '#2a140a';
 
 export interface View {
   /** hauteur de caméra en niveaux (lissée) */
@@ -40,27 +48,44 @@ export function draw(canvas: HTMLCanvasElement, s: State, v: View, time: number,
   // plateau
   const floorY = levelY(0) + BLOCK_H * u;
   if (floorY < H + 20) {
-    ctx.fillStyle = '#f0dfbf';
+    ctx.fillStyle = '#b87a47';
     rr(ctx, ox - 4, floorY, colW + 8, H - floorY + 40, 0);
     ctx.fill();
     ctx.stroke();
+    ctx.fillStyle = '#fff0d2';
+    ctx.fillRect(ox + 6, floorY + 3, colW - 12, u * 1.6);
   }
 
   const block = (b: Block, lvl: number, dy = 0, face = false) => {
     const x = ox + b.x * u;
     const y = levelY(lvl) + dy * u;
     if (y > H + 40 || y < -BLOCK_H * u * 2) return;
-    ctx.fillStyle = COLORS[b.color % PALETTE];
-    rr(ctx, x, y, b.w * u, BLOCK_H * u, BLOCK_H * u * 0.42);
+    const [base, shine] = COLORS[b.color % PALETTE];
+    const bw = b.w * u;
+    const bh = BLOCK_H * u;
+    ctx.fillStyle = base;
+    rr(ctx, x, y, bw, bh, bh * 0.2);
     ctx.fill();
     ctx.stroke();
+    // relief de la tablette : un carré en retrait par segment, un reflet plat en haut
+    if (bw > 24) {
+      ctx.fillStyle = shine;
+      const seg = Math.max(1, Math.round(bw / (bh * 1.1)));
+      const sw = bw / seg;
+      const pad = bh * 0.16;
+      for (let k = 0; k < seg; k++) {
+        rr(ctx, x + k * sw + pad, y + pad, sw - pad * 2, bh * 0.28, bh * 0.1);
+        ctx.fill();
+      }
+    }
     if (face && b.w * u > 28) {
       const cx = x + (b.w * u) / 2;
       const cy = y + BLOCK_H * u * 0.5;
       ctx.fillStyle = INK;
+      ctx.fillStyle = INK;
       ctx.beginPath();
-      ctx.arc(cx - u * 3.2, cy, u * 0.9, 0, 7);
-      ctx.arc(cx + u * 3.2, cy, u * 0.9, 0, 7);
+      ctx.arc(cx - u * 3.2, cy + u * 1.2, u * 0.9, 0, 7);
+      ctx.arc(cx + u * 3.2, cy + u * 1.2, u * 0.9, 0, 7);
       ctx.fill();
     }
   };

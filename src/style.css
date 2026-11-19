@@ -9,17 +9,17 @@
   src: url("./fonts/fredoka-latin-wght-normal.woff2") format("woff2");
 }
 
-/* Identité Mochi Stack : pâtisserie japonaise. Aplats pastel, contour encre 3 px, ombre dure. */
+/* Identité Mochi Stack : chocolaterie. Aplats chocolat, contour cacao 3 px, ombre dure. */
 @theme {
   --color-*: initial;
-  --color-ink: #16110f;
-  --color-cream: #fff4e0;
-  --color-sakura: #ffb3c7;
-  --color-matcha: #b8e6c9;
+  --color-ink: #2a140a;
+  --color-cream: #fff0d2;
+  --color-caramel: #e0a055;
+  --color-milk: #c98a52;
   --color-white: #ffffff;
   --font-sans: "Fredoka", ui-rounded, sans-serif;
-  --shadow-hard: 4px 4px 0 #16110f;
-  --shadow-hard-sm: 3px 3px 0 #16110f;
+  --shadow-hard: 4px 4px 0 #2a140a;
+  --shadow-hard-sm: 3px 3px 0 #2a140a;
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -28,8 +28,8 @@ body {
   height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
-  background: #fff4e0;
-  color: #16110f;
+  background: #f6e2c4;
+  color: #2a140a;
   font-weight: 500;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
@@ -38,14 +38,14 @@ body {
 
 @layer components {
   .btn {
-    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border-[3px] border-ink bg-sakura px-5 py-2 text-xl font-bold text-ink shadow-hard transition-transform duration-100 ease-out;
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border-[3px] border-ink bg-caramel px-5 py-2 text-xl font-bold text-ink shadow-hard transition-transform duration-100 ease-out;
     touch-action: manipulation;
   }
   .btn:active {
     @apply translate-x-1 translate-y-1 shadow-none;
   }
   .btn:focus-visible {
-    outline: 4px solid #16110f;
+    outline: 4px solid #2a140a;
     outline-offset: 3px;
   }
   .btn-cream {
@@ -65,17 +65,17 @@ body {
     @apply inline-flex min-h-10 items-center gap-2 rounded-xl border-[3px] border-ink bg-cream px-3 text-lg font-bold shadow-hard-sm;
   }
   .logo {
-    @apply font-bold text-sakura;
-    -webkit-text-stroke: 7px #16110f;
+    @apply font-bold text-cream;
+    -webkit-text-stroke: 7px #2a140a;
     paint-order: stroke fill;
-    text-shadow: 0 6px 0 #16110f;
+    text-shadow: 0 6px 0 #2a140a;
     line-height: 0.95;
   }
   .score {
     @apply font-bold text-white;
-    -webkit-text-stroke: 8px #16110f;
+    -webkit-text-stroke: 8px #2a140a;
     paint-order: stroke fill;
-    text-shadow: 0 5px 0 #16110f;
+    text-shadow: 0 5px 0 #2a140a;
   }
 }
 
