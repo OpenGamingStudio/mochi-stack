@@ -18,8 +18,19 @@ export interface View {
 }
 
 function rr(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {
+  const k = Math.min(r, w / 2, h / 2);
   ctx.beginPath();
-  ctx.roundRect(x, y, w, h, Math.min(r, w / 2, h / 2));
+  if (typeof ctx.roundRect === 'function') {
+    ctx.roundRect(x, y, w, h, k);
+    return;
+  }
+  // repli (Safari < 16, Chrome < 99) : coins arrondis à la main
+  ctx.moveTo(x + k, y);
+  ctx.arcTo(x + w, y, x + w, y + h, k);
+  ctx.arcTo(x + w, y + h, x, y + h, k);
+  ctx.arcTo(x, y + h, x, y, k);
+  ctx.arcTo(x, y, x + w, y, k);
+  ctx.closePath();
 }
 
 export function bgFor(score: number): string {

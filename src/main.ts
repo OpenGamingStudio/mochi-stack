@@ -1,7 +1,7 @@
 import './style.css';
 import { Sfx } from './audio';
 import { draw, follow, type View } from './render';
-import { loadBest, loadSound, saveBest, saveSound } from './save';
+import { isNewRecord, loadBest, loadSound, saveBest, saveSound } from './save';
 import { drop, newGame, update, type State } from './sim';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -39,7 +39,8 @@ showBest();
 
 function paintSound(): void {
   const b = $('sound');
-  b.textContent = sfx.enabled ? '🔊' : '🔇';
+  $('sound-on').hidden = !sfx.enabled;
+  $('sound-off').hidden = sfx.enabled;
   b.setAttribute('aria-pressed', String(sfx.enabled));
   b.setAttribute('aria-label', sfx.enabled ? 'Couper le son' : 'Activer le son');
 }
@@ -74,7 +75,12 @@ function tap(): void {
   hudScore.classList.remove('bump');
   void hudScore.offsetWidth;
   hudScore.classList.add('bump');
-  const beatRecord = r !== 'miss' && !recordSung && bestAtStart > 0 && state.score > bestAtStart;
+  // le record est gardé à chaque lâcher (onglet fermé en pleine partie = score conservé)
+  if (r !== 'miss' && state.score > best) {
+    best = saveBest(state.score);
+    showBest();
+  }
+  const beatRecord = r !== 'miss' && !recordSung && bestAtStart > 0 && isNewRecord(state.score, bestAtStart);
   if (beatRecord) {
     recordSung = true;
     sfx.record();
@@ -84,9 +90,10 @@ function tap(): void {
     sfx.over();
     best = saveBest(state.score);
     showBest();
+    const record = isNewRecord(state.score, bestAtStart);
     setTimeout(() => {
       $('over-score').textContent = String(state.score);
-      $('over-best').textContent = state.score >= best && state.score > 0 ? 'Nouveau record !' : `Meilleur : ${best}`;
+      $('over-best').textContent = record ? 'Nouveau record !' : `Meilleur : ${best}`;
       overEl.hidden = false;
       $('replay').focus();
     }, 700);
@@ -102,7 +109,9 @@ addEventListener('keydown', (e) => {
   const t = e.target as HTMLElement;
   if (t.tagName === 'BUTTON') return;
   e.preventDefault();
-  tap();
+  if (e.repeat) return;
+  if (!running || (state.over && !overEl.hidden)) start();
+  else tap();
 });
 $('play').addEventListener('click', start);
 $('replay').addEventListener('click', start);
@@ -118,6 +127,17 @@ function frame(now: number): void {
     view.cam = 0;
   }
   draw(canvas, state, view, now / 1000, running);
-  requestAnimationFrame(frame);
+  raf = document.hidden ? 0 : requestAnimationFrame(frame);
 }
-requestAnimationFrame(frame);
+let raf = requestAnimationFrame(frame);
+
+// onglet caché : plus de rendu, audio suspendu ; au retour on reprend (même sans geste, iOS « interrupted »)
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    sfx.suspend();
+    return;
+  }
+  last = performance.now();
+  if (sfx.enabled && running) sfx.resume();
+  if (!raf) raf = requestAnimationFrame(frame);
+});

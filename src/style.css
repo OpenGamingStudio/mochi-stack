@@ -54,6 +54,15 @@ body {
   .btn-big {
     @apply min-h-16 px-10 text-3xl;
   }
+  .ico {
+    @apply inline-block h-6 w-6 shrink-0;
+  }
+  .ico-lg {
+    @apply h-8 w-8;
+  }
+  .ico[hidden] {
+    display: none;
+  }
   .btn-icon {
     @apply min-w-12 px-0;
   }

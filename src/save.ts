@@ -35,6 +35,11 @@ export function saveBest(score: number): number {
   return best;
 }
 
+/** Un record n'est « nouveau » que s'il bat strictement le meilleur du début de partie. */
+export function isNewRecord(score: number, bestAtStart: number): boolean {
+  return score > 0 && score > bestAtStart;
+}
+
 export function loadSound(): boolean {
   return get(SOUND) !== '0';
 }

@@ -31,7 +31,18 @@ export class Sfx {
       const d = this.noise.getChannelData(0);
       for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
     }
-    if (this.ctx.state === 'suspended') void this.ctx.resume();
+    this.resume();
+  }
+
+  /** Reprend le contexte audio (suspendu par le navigateur ou « interrupted » sous iOS). */
+  resume(): void {
+    const c = this.ctx;
+    if (c && (c.state === 'suspended' || (c.state as string) === 'interrupted')) void c.resume().catch(() => {});
+  }
+
+  /** Onglet caché : on libère l'audio. */
+  suspend(): void {
+    if (this.ctx && this.ctx.state === 'running') void this.ctx.suspend().catch(() => {});
   }
 
   /** Une frappe de touche : clic (bruit) + thock (corps). */
