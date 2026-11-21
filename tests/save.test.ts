@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseBest } from '../src/save';
+import { isNewRecord, parseBest } from '../src/save';
 
 describe('save', () => {
   it('lit un record valide', () => {
@@ -10,5 +10,12 @@ describe('save', () => {
     expect(parseBest('abc')).toBe(0);
     expect(parseBest('-3')).toBe(0);
     expect(parseBest('1e9')).toBe(0);
+  });
+  it('isNewRecord : strictement supérieur, pas sur une égalité', () => {
+    expect(isNewRecord(10, 10)).toBe(false);
+    expect(isNewRecord(9, 10)).toBe(false);
+    expect(isNewRecord(11, 10)).toBe(true);
+    expect(isNewRecord(1, 0)).toBe(true);
+    expect(isNewRecord(0, 0)).toBe(false);
   });
 });
