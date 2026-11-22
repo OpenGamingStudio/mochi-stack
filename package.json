@@ -1,6 +1,6 @@
 {
   "name": "mochi-stack",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "private": true,
   "description": "Mochi Stack : empile des mochis en chocolat le plus haut possible, jouable dans le navigateur et sur mobile.",
   "license": "MIT",
