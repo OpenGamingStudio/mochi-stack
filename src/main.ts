@@ -1,7 +1,7 @@
 import './style.css';
 import { Sfx } from './audio';
 import { draw, follow, type View } from './render';
-import { isNewRecord, loadBest, loadSound, saveBest, saveSound } from './save';
+import { isNewRecord, loadBest, loadSound, parseBest, saveBest, saveSound, setBest } from './save';
 import { drop, newGame, update, type State } from './sim';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -65,6 +65,7 @@ function start(): void {
   overEl.hidden = true;
   hud.hidden = false;
   hudScore.textContent = '0';
+  window.OGSAccount?.show(false);
 }
 
 function tap(): void {
@@ -95,6 +96,7 @@ function tap(): void {
       $('over-score').textContent = String(state.score);
       $('over-best').textContent = record ? 'Nouveau record !' : `Meilleur : ${best}`;
       overEl.hidden = false;
+      window.OGSAccount?.show(true);
       $('replay').focus();
     }, 700);
   }
@@ -140,4 +142,19 @@ document.addEventListener('visibilitychange', () => {
   last = performance.now();
   if (sfx.enabled && running) sfx.resume();
   if (!raf) raf = requestAnimationFrame(frame);
+});
+
+// ---- compte OpenGamingStudio (facultatif) : record sur tous les appareils ----------------------------
+declare global { interface Window { OGSAccount?: { init(c: Record<string, unknown>): void; show(on: boolean): void; notifyChange?(): void } } }
+window.OGSAccount?.init({
+  game: 'mochi-stack', version: __APP_VERSION__, color: '#FF8FB1', anchor: 'top-left', offset: [8, 8],
+  getSave: () => ({ best: loadBest(), sound: loadSound() }),
+  applySave: (d: { best?: unknown; sound?: unknown }) => {
+    if (!d || typeof d !== 'object') return;
+    setBest(parseBest(String(d.best ?? 0)));
+    if (typeof d.sound === 'boolean') saveSound(d.sound);
+    location.reload();
+  },
+  isEmpty: (d: { best?: unknown }) => !d || !(Number(d.best) > 0),
+  describe: (d: { best?: unknown }) => `record ${Number(d?.best) || 0}`,
 });

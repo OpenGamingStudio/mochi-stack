@@ -35,6 +35,11 @@ export function saveBest(score: number): number {
   return best;
 }
 
+/** Remplace le record (progression venant du compte). */
+export function setBest(n: number): void {
+  set(BEST, String(n));
+}
+
 /** Un record n'est « nouveau » que s'il bat strictement le meilleur du début de partie. */
 export function isNewRecord(score: number, bestAtStart: number): boolean {
   return score > 0 && score > bestAtStart;

@@ -19,3 +19,18 @@ describe('save', () => {
     expect(isNewRecord(0, 0)).toBe(false);
   });
 });
+
+describe('compte : setBest', () => {
+  it('remplace le record, même vers le bas (choix du joueur)', async () => {
+    const mem = new Map<string, string>();
+    (globalThis as { localStorage?: unknown }).localStorage = {
+      getItem: (k: string) => mem.get(k) ?? null,
+      setItem: (k: string, v: string) => void mem.set(k, v),
+    };
+    const { loadBest, saveBest, setBest } = await import('../src/save');
+    saveBest(40);
+    setBest(12);
+    expect(loadBest()).toBe(12);
+    delete (globalThis as { localStorage?: unknown }).localStorage;
+  });
+});
